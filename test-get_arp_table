@@ -1,0 +1,36 @@
+import platform
+
+def call_OS():
+    platform.platform()
+    if 'Linux-' in platform.platform():
+        return 'Linux detected.'
+    if 'Windows-' in platform.platform():
+        return 'Windows detected.'
+    else:
+        return 'You may not proceed.'
+
+print(call_OS())
+
+import subprocess
+
+def Get_Arp():
+    
+    platform.platform()
+
+    if 'Windows-' in platform.platform():
+        try:
+            print(subprocess.check_output(("arp", "-a")))
+        except:
+            return 'Next'
+    if 'Linux-' in platform.platform():
+        import python_arptable
+        try:
+           python_arptable.get_arp_table()
+        except:
+           return 'Next'
+    elif 'Darwin-' in platform.platform():
+        return "System not recognized"
+
+print(Get_Arp())
+
+import pcapng
