@@ -1,4 +1,24 @@
 import platform
+from time import sleep
+
+print """
+
+    ====================
+    Welcome to Hunter-py 
+    ====================
+    by: Stevejun1986
+
+    This project began after completing a simple Python 3 Tutorial course.
+    It is my first large-scale program/script ever written.
+    If you find anything wrong, or would like to submit a recommendation for future 
+    modification, you can email me at: st*********ers86@gmail.com
+
+    I hope Hunter.py will exceed your expectations.
+
+    Happy Hunting!
+
+    """
+sleep(2)
 
 def call_OS():
     platform.platform()
@@ -12,6 +32,8 @@ def call_OS():
 print(call_OS())
 
 import subprocess
+
+sleep(5)
 
 def Get_Arp():
     
@@ -29,8 +51,54 @@ def Get_Arp():
         except:
            return 'Next'
     elif 'Darwin-' in platform.platform():
-        return "System not recognized"
-
+        print "System not recognized"
+        raise SystemExit
+    sleep(5)
 print(Get_Arp())
 
-import pcapng
+ip_address = raw_input('What is the IP Address of the system you would like to call for PCAP: ')
+
+print('The remote IP Address is: ' + ip_address + '. Parsing.')
+
+def ping_ip():
+    
+    import os
+
+    hostname = ip_address
+    response = os.system("ping " + hostname)
+
+    if response == 0:
+        print hostname, 'is up. Retreiving most recent PCAP record...'
+        
+    else:
+        print hostname, 'is not reachable. Terminating...   '
+        raise SystemExit
+print(' ')
+
+ping_ip()
+
+print('  ')
+sleep(5)
+print 'This was a test. Good-bye.'
+
+sleep(3)
+raise SystemExit
+ 
+#    import pcapng
+def exists_remote(host, path):
+    """Test if a file exists at path on a host accessible with SSH."""
+    host = ip_address
+    path = raw_input('Where are we looking: ')
+    status = subprocess.call(
+        ['ssh', host, 'test -f {}'.format(pipes.quote(path))])
+    if status == 0:
+        return True
+    if status == 1:
+        return False
+    raise Exception('SSH failed')
+
+#if exists_remote(ip_address, path):
+#    system , file, file type
+#    print 'PCAP file retrieved. Processing...'
+
+sleep(3)
