@@ -1,5 +1,6 @@
 import platform
 from time import sleep
+import subprocess
 
 print """
 
@@ -26,14 +27,10 @@ def call_OS():
         return 'Linux detected.'
     if 'Windows-' in platform.platform():
         return 'Windows detected.'
-    else:
-        return 'You may not proceed.'
-
+    
 print(call_OS())
 
-import subprocess
-
-sleep(5)
+sleep(3)
 
 def Get_Arp():
     
@@ -58,7 +55,7 @@ print(Get_Arp())
 
 ip_address = raw_input('What is the IP Address of the system you would like to call for PCAP: ')
 
-print('The remote IP Address is: ' + ip_address + '. Parsing.')
+print('The remote IP Address is: ' + ip_address + '. Processing:')
 
 def ping_ip():
     
@@ -68,34 +65,31 @@ def ping_ip():
     response = os.system("ping " + hostname)
 
     if response == 0:
-        print hostname, 'is up. Retreiving most recent PCAP record...'
+        return hostname, 'is up. Retreiving most recent PCAP record: Beginning SSH connection...'
         
     else:
-        print hostname, 'is not reachable. Terminating...   '
+        return hostname, 'is not reachable. Terminating...   '
         raise SystemExit
 print(' ')
 
 ping_ip()
 
-print('  ')
-sleep(5)
+sleep(3)
+print(' ')
+
+print('Initiating SSH with remote host. Please wait...')
+
+
+sleep (3)
+
 print 'This was a test. Good-bye.'
 
+print ' '
 sleep(3)
 raise SystemExit
  
-#    import pcapng
-def exists_remote(host, path):
-    """Test if a file exists at path on a host accessible with SSH."""
-    host = ip_address
-    path = raw_input('Where are we looking: ')
-    status = subprocess.call(
-        ['ssh', host, 'test -f {}'.format(pipes.quote(path))])
-    if status == 0:
-        return True
-    if status == 1:
-        return False
-    raise Exception('SSH failed')
+import pcapng
+import sys
 
 #if exists_remote(ip_address, path):
 #    system , file, file type
