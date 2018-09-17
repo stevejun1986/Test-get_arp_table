@@ -84,7 +84,7 @@ print("""
 	""")
 sleep(4)
 print("""
-	Connecting. Some may be input neeeded...
+	Connecting. Some input may be neeeded...
 	""")
 sleep(4)
 print("""
