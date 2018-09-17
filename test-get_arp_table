@@ -1,6 +1,5 @@
-import platform
+import platform, os, subprocess, sys, getpass
 from time import sleep
-import subprocess
 
 print """
 
@@ -27,9 +26,10 @@ def call_OS():
         return 'Linux detected.'
     if 'Windows-' in platform.platform():
         return 'Windows detected.'
-    
-print(call_OS())
+    else:
+        return 'You may not proceed.'
 
+print(call_OS())
 sleep(3)
 
 def Get_Arp():
@@ -48,51 +48,85 @@ def Get_Arp():
         except:
            return 'Next'
     elif 'Darwin-' in platform.platform():
-        print "System not recognized"
-        raise SystemExit
-    sleep(5)
+        return 'System not recognized'
+
 print(Get_Arp())
 
-ip_address = raw_input('What is the IP Address of the system you would like to call for PCAP: ')
+print(' ')
+sleep(5)
 
-print('The remote IP Address is: ' + ip_address + '. Processing:')
+print(' ')
 
 def ping_ip():
-    
-    import os
 
-    hostname = ip_address
-    response = os.system("ping " + hostname)
+	ip_address = raw_input('What is the IP address of the remote system you would like to call for ARP: ')
+	print('The remote IP address is: ' + ip_address + '. Processing.')
+	hostname = ip_address
+	ping_str = 'ping -n 1 ' + hostname
 
-    if response == 0:
-        return hostname, 'is up. Retreiving most recent PCAP record: Beginning SSH connection...'
-        
-    else:
-        return hostname, 'is not reachable. Terminating...   '
-        raise SystemExit
-print(' ')
+	response = os.system(ping_str)
+	sleep(3)
+	if response == 0:
+		print hostname,' is up. Preparing to connect with SSH.'
 
-ping_ip()
+	if response is not 0:
+		print hostname,' is not responding. Terminating...'
+		raise SystemExit
 
+print(ping_ip())
+
+import paramiko
+
+print('...')
+sleep(1)
+print("""
+	Intiating SSH with remote host. Please wait...
+	""")
+sleep(4)
+print("""
+	Connecting. Some may be input neeeded...
+	""")
+sleep(4)
+print("""
+	Sorry for the delay. Here we go...
+	""")
 sleep(3)
-print(' ')
+#print('This was only a test. Good-bye.')
+#sleep(2)
+#raise SystemExit
 
-print('Initiating SSH with remote host. Please wait...')
+def ssh_connect():
+	
+#	if len(sys.argv) < 4:
+#		print('args missing')
+#		sys.exit(1)
 
+	hostname = raw_input('Please confirm the IP Address: ')
+	password = getpass.getpass('Please enter the password: ')
+	command1 = "8"
+	command2 = "arp", "-a"
 
-sleep (3)
+	username = raw_input('Enter the user name: ')
+	port = 22
 
-print 'This was a test. Good-bye.'
+	try:
+		client = paramiko.SSHClient()
+		client.load_system_host_keys()
+		#client.set_missing_host_key_policy(paramiko.WarningPolicy())
+		#client.AutoAddPolicy()
+		client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+		client.connect(hostname, port=port, username=username, password=password)
+		sleep(5)
+		stdin, stdout, stderr = client.exec_command('8')
+		print(sys.stderr())
+		stdin, stdout, stderr = client.exec_command('arp -a')
+		print(sys.stderr())
+		#print(stdout.read()),
+		sleep(5)
+		for line in stdout:
+			print line
 
-print ' '
-sleep(3)
-raise SystemExit
- 
-import pcapng
-import sys
+	finally:
+		client.close()
 
-#if exists_remote(ip_address, path):
-#    system , file, file type
-#    print 'PCAP file retrieved. Processing...'
-
-sleep(3)
+ssh_connect()
