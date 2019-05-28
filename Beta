@@ -1,0 +1,186 @@
+from time import sleep
+import sys, os, platform, subprocess, getpass
+import nmap, python_arptable
+
+ARPTABLE = python_arptable
+
+print(
+      """
+      
+      BANNER GOES HERE
+      
+      """)
+
+sleep(2)
+
+def call_OS():
+    platform.platform()
+    if'Linux-' in platform.platform():
+        return 'Host system is Linux'
+    if 'Windows-' in platform.platform():
+        return 'Host system is Windows.'
+    else:
+        return 'You may not proceed.'
+        raise SystemExit
+    
+sleep(2)
+
+print(call_OS())
+sleep(3)
+platform.platform()
+print('...')
+sleep(2)
+if 'Windows-' in platform.platform():
+    print("""
+    I don't think I like Windows.
+    """)
+if 'Linux-' in platform.platform():
+    print("""
+    Now this feels just like home.
+    """)
+if 'Darwin-' in platform.platform():
+    print("""
+    This may not work, but I will try...
+    """)
+
+sleep(2)
+
+def Get_Arp():
+    platform.platform()
+
+    if 'Windows-' in platform.platform():
+        try:
+            print('Retreiving local ARP cache. Please wait.')
+            sleep(3)
+            print(' ')
+            print(subprocess.check_output(("arp", "-a")))
+        except:
+            return 'Local ARP cache displayed.'
+    if "Linux-" in platform.platform():
+       try:
+           ARPTABLE.get_arp_table()
+       except:
+            return 'Local ARP cache displayed.'
+    elif 'Darwin-' in platform.platform():
+        return 'System not recognized. Commands unknown. Terminating' 
+        raise SystemExit
+
+print(' ')
+print(Get_Arp())
+
+sleep(2)
+
+print(' ')
+
+ip_address = input('What IP address to call for ARP: ')
+hostname = ip_address
+
+def ping_ip():
+    print('The remote IP address is: ' + hostname + '. Processing.')
+
+    ping_str = 'ping ' + ip_address + ' -n 1'
+
+    response = os.system(ping_str)
+
+    sleep(3)
+
+    if response == 0:
+        print(hostname + ' is up. Checking remote operating system.')
+print(' ')
+print(ping_ip())
+sleep(2)
+print(' ')
+print('This was a test. Thank you.')
+raise SystemExit    
+sleep(2)
+
+nm = nmap.PortScanner()
+
+def nm():
+    if '*Linux*' in nm.scan:
+        print(hostname + ' is Linux. Adjusting Parameters...')
+
+    if '*Windows*' in nm.scan:
+        print(hostname + ' is Windows. Adjusting parameters...')
+
+    if 'Port 22 is up' in nm.scan:
+        print(hostname + ':22 is open. SSH allowed with TCP.')
+
+    else:
+        return 'Nmap could not resolve. Terminating.'
+        raise SystemExit
+
+r = nm.scan('192.168.0.29', '22', '-O', False)
+s = nm.analyse_map_xml_scan(open('../scanme_output.xml').read())
+nm.commandline()
+nm.scaninfo()
+
+print(nm())
+
+import paramiko
+
+print('...')
+
+sleep(1)
+
+print("""
+    Initiating SSH with remote hose. Pleast wait...
+    """)
+sleep(2)
+print("""
+    Connecting. Some input may be needed.
+    """)
+sleep(1)
+print("""
+    Sorry for thhe delay. Here we go...
+    """)
+sleep(2)
+
+print('This was only a test. Good-bye')
+sleep(2)
+raise SystemExit
+
+def ssh_connect():
+    if len(sys.argv) < 4:
+        print('args missing')
+        sys.exit(1)
+
+    hostname = ip_address
+    sleep(1)
+    username = input('Enter the username: ')
+    sleep(1)
+    password = getpass.getpass('Please enter the password: ')
+    sleep(3)
+#   command1 = "8"
+#   sleep(2)
+#   command2 = "arp", "-a"
+
+    port = 22
+
+    try:
+        client = paramiko.SSHClient()
+        client.load_host_keys()
+        client.set_missing_host_key_policy(paramiko.WarningPolicy())
+        client.AutoAddPolicy()
+        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        client.connect(hostname, port=port, username=username, password=password)
+        print('Connecting to ' + hostname + ' with username= '+username+ ' on port 22.')
+        sleep(3)
+
+        stdin, stdout, stderr = client.exec_command('8')
+        sleep(2)
+        stdin, stdout, stderr = client.exec_command('arp -a >> /var/log/arp.log')
+        print(sys.stderr())
+        print(stdout.read())
+        sleep(3)
+        for line in stdout:
+            print(line)
+
+    finally:
+        client.close()
+
+    if client.close():
+        print('Unable to connect. Exiting...')
+        raise SystemExit
+
+ssh_connect()
