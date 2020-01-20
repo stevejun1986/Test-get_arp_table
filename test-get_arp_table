@@ -1,8 +1,7 @@
 import platform, os, subprocess, sys, getpass
 from time import sleep
 
-print """
-
+print("""
     ====================
     Welcome to Hunter-py 
     ====================
@@ -17,20 +16,26 @@ print """
 
     Happy Hunting!
 
-    """
+    """)
+
 sleep(2)
+
+print("Let's get started...")
+sleep(3)
+
 
 def call_OS():
     platform.platform()
     if 'Linux-' in platform.platform():
         return 'Linux detected.'
     if 'Windows-' in platform.platform():
-        return 'Windows detected.'
+        return "Windows detected."
     else:
         return 'You may not proceed.'
 
 print(call_OS())
 sleep(3)
+
 
 def Get_Arp():
     
@@ -49,51 +54,45 @@ def Get_Arp():
            return 'Next'
     elif 'Darwin-' in platform.platform():
         return 'System not recognized'
+        raise SystemExit
 
 print(Get_Arp())
 
-print(' ')
-sleep(5)
-
-print(' ')
-
 def ping_ip():
 
-	ip_address = raw_input('What is the IP address of the remote system you would like to call for ARP: ')
+	ip_address = input('What is the IP address of the remote system you would like to call for ARP: ')
 	print('The remote IP address is: ' + ip_address + '. Processing.')
 	hostname = ip_address
 	ping_str = 'ping -n 1 ' + hostname
 
 	response = os.system(ping_str)
 	sleep(3)
+
 	if response == 0:
-		print hostname,' is up. Preparing to connect with SSH.'
+		print(hostname,' is up. Preparing to connect with SSH.')
 
 	if response is not 0:
-		print hostname,' is not responding. Terminating...'
+		print(hostname,' is not responding. Terminating...')
 		raise SystemExit
 
 print(ping_ip())
 
 import paramiko
 
-print('...')
 sleep(1)
 print("""
-	Intiating SSH with remote host. Please wait...
-	""")
+
+        Initiating SSH with remote host. Pleast wait...
+        """)
 sleep(4)
 print("""
-	Connecting. Some input may be neeeded...
-	""")
-sleep(4)
-print("""
-	Sorry for the delay. Here we go...
-	""")
-sleep(3)
-#print('This was only a test. Good-bye.')
-#sleep(2)
+        Connecting. Some input may be required...
+        """)
+
+#print('This was only a test. Exiting...')
 #raise SystemExit
+
+import stdiomask
 
 def ssh_connect():
 	
@@ -101,12 +100,11 @@ def ssh_connect():
 #		print('args missing')
 #		sys.exit(1)
 
-	hostname = raw_input('Please confirm the IP Address: ')
-	password = getpass.getpass('Please enter the password: ')
-	command1 = "8"
-	command2 = "arp", "-a"
+	hostname = input('Please confirm the IP Address: ')
+	password = stdiomask.getpass('Please enter the password: ', mask='*')
+	command1 = "arp show"
 
-	username = raw_input('Enter the user name: ')
+	username = input('Enter the user name: ')
 	port = 22
 
 	try:
@@ -117,14 +115,12 @@ def ssh_connect():
 		client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 		client.connect(hostname, port=port, username=username, password=password)
 		sleep(5)
-		stdin, stdout, stderr = client.exec_command('8')
-		print(sys.stderr())
-		stdin, stdout, stderr = client.exec_command('arp -a')
-		print(sys.stderr())
-		#print(stdout.read()),
+		stdin, stdout, stderr = client.exec_command('arp show')
+		#print(sys.stderr())
+		#print(stdout.read())
 		sleep(5)
 		for line in stdout:
-			print line
+			print(line)
 
 	finally:
 		client.close()
